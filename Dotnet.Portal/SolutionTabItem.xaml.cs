@@ -79,6 +79,7 @@ namespace Dotnet.Portal
             _projectTabControls.Remove(projectTabControl);
 
             Settings.Projects.Remove(projectTabControl.Settings);
+            Projects.Items.Remove(projectTabControl);
 
             if (Settings.Projects.Count == 0)
             {

@@ -60,7 +60,8 @@ namespace Dotnet.Portal
 
         public void FocusOnOutput()
         {
-            richTextBoxOutput.Focus();
+            //TODO not steal focus from double click on tab name
+            //richTextBoxOutput.Focus();
         }
 
         private void AppendLine(string text, HighlightMatches highlights = null)
