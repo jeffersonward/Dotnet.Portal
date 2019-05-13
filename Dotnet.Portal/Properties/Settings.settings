@@ -1,0 +1,40 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="dotnet.runner.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DefaultSettings" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ApplicationSettingsDto xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;DefaultHighlightSettings&gt;
+    &lt;HighlightSettingDto&gt;
+      &lt;Regex&gt;^(\[\d{2}\:\d{2}\:\d{2}[ ]VRB\][ ]|\d{2}\:\d{2}\:\d{2}[ ]\[VRB\][ ])&lt;/Regex&gt;
+      &lt;Color&gt;#808080&lt;/Color&gt;
+    &lt;/HighlightSettingDto&gt;
+    &lt;HighlightSettingDto&gt;
+      &lt;Regex&gt;^(\[\d{2}\:\d{2}\:\d{2}[ ]INF\][ ]|\d{2}\:\d{2}\:\d{2}[ ]\[INF\][ ])&lt;/Regex&gt;
+      &lt;Color&gt;#008000&lt;/Color&gt;
+    &lt;/HighlightSettingDto&gt;
+    &lt;HighlightSettingDto&gt;
+      &lt;Regex&gt;^(\[\d{2}\:\d{2}\:\d{2}[ ]DBG\][ ]|\d{2}\:\d{2}\:\d{2}[ ]\[DBG\][ ])&lt;/Regex&gt;
+      &lt;Color&gt;#00FFFF&lt;/Color&gt;
+    &lt;/HighlightSettingDto&gt;
+    &lt;HighlightSettingDto&gt;
+      &lt;Regex&gt;^(\[\d{2}\:\d{2}\:\d{2}[ ]WRN\][ ]|\d{2}\:\d{2}\:\d{2}[ ]\[WRN\][ ])&lt;/Regex&gt;
+      &lt;Color&gt;#FFA500&lt;/Color&gt;
+    &lt;/HighlightSettingDto&gt;
+    &lt;HighlightSettingDto&gt;
+      &lt;Regex&gt;^(\[\d{2}\:\d{2}\:\d{2}[ ]ERR\][ ]|\d{2}\:\d{2}\:\d{2}[ ]\[ERR\][ ])&lt;/Regex&gt;
+      &lt;Color&gt;#FF0000&lt;/Color&gt;
+    &lt;/HighlightSettingDto&gt;
+    &lt;HighlightSettingDto&gt;
+      &lt;Regex&gt;^(\[\d{2}\:\d{2}\:\d{2}[ ]FTL\][ ]|\d{2}\:\d{2}\:\d{2}[ ]\[FTL\][ ])&lt;/Regex&gt;
+      &lt;Color&gt;#9370DB&lt;/Color&gt;
+    &lt;/HighlightSettingDto&gt;
+  &lt;/DefaultHighlightSettings&gt;
+&lt;/ApplicationSettingsDto&gt;</Value>
+    </Setting>
+    <Setting Name="UserSettings" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>
