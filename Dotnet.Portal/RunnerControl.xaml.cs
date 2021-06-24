@@ -38,9 +38,16 @@ namespace Dotnet.Portal
             textBoxWorkingDirectory.Text = settings.File;
             checkBoxWatch.IsChecked = settings.Watch;
 
-            _runner = new Runner(new FileInfo(settings.File).DirectoryName, highlights);
-            _runner.OutputReceived += RunnerOnOutputReceived;
-            _runner.RunningStateChanged += RunnerOnRunningStateChanged;
+            if (File.Exists(settings.File))
+            {
+                _runner = new Runner(new FileInfo(settings.File).DirectoryName, highlights);
+                _runner.OutputReceived += RunnerOnOutputReceived;
+                _runner.RunningStateChanged += RunnerOnRunningStateChanged;
+            }
+            else
+            {
+                checkBoxWatch.IsEnabled = buttonStartStop.IsEnabled = false;
+            }
         }
 
         public RunnerControl()
@@ -127,7 +134,7 @@ namespace Dotnet.Portal
 
             _runner.OutputReceived -= RunnerOnOutputReceived;
             _runner.RunningStateChanged -= RunnerOnRunningStateChanged;
-            _runner?.Dispose();
+            _runner.Dispose();
 
             AppendLine("");
             AppendLine("");
@@ -158,11 +165,15 @@ namespace Dotnet.Portal
 
         public void Stop()
         {
+            if (_runner == null) return;
+
             _runner.Stop();
         }
 
         public void Start()
         {
+            if (_runner == null) return;
+
             richTextBoxOutput.Document.Blocks.Clear();
             buttonStartStop.ToolTip = "Stop";
             imageStartStop.Source = new BitmapImage(new Uri("images/blue-cross.png", UriKind.Relative));

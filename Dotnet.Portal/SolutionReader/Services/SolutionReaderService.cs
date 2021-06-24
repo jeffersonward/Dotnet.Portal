@@ -38,7 +38,7 @@ namespace Dotnet.Portal.SolutionReader.Services
         private static IEnumerable<FileInfo> GetProjectFiles(Solution solution)
         {
             var contents = File.ReadAllLines(solution.File.FullName);
-            return contents.Where(x => x.StartsWith("Project(\"{9A19103F-16F7-4668-BE54-9A1E7A4F7556}\")"))
+            return contents.Where(x => x.StartsWith("Project(\"{"))
                 .Select(x => x.Split(new[] { " = " }, StringSplitOptions.None)[1].Split(',')[1].Replace('"', ' ').Trim())
                 .Select(x => Path.Combine(solution.File.DirectoryName ?? "", x))
                 .Select(x => new FileInfo(x));
