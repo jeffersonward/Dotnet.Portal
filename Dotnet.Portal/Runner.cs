@@ -77,7 +77,8 @@ namespace Dotnet.Portal
         {
             if (_running)
             {
-                if (Path.GetDirectoryName(e.FullPath) == e.FullPath) return;
+                if (File.GetAttributes(e.FullPath).HasFlag(FileAttributes.Directory)) return;
+                if (e.FullPath.EndsWith(".log", StringComparison.InvariantCultureIgnoreCase)) return;
 
                 Stop($"Detected compilation in progress: {e.Name} {e.ChangeType}");
             }
