@@ -75,12 +75,16 @@ namespace Dotnet.Portal
 
         private void Compiling(object sender, FileSystemEventArgs e)
         {
-            if (_running)
-            {
-                if (File.GetAttributes(e.FullPath).HasFlag(FileAttributes.Directory)) return;
-                if (e.FullPath.EndsWith(".log", StringComparison.InvariantCultureIgnoreCase)) return;
+            if (!_running) return;
 
+            if (e.FullPath.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) ||
+                e.FullPath.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase))
+            {
                 Stop($"Detected compilation in progress: {e.Name} {e.ChangeType}");
+            }
+            else
+            {
+                FireOutputReceived($"File change detected: {e.Name} {e.ChangeType}");
             }
         }
 
