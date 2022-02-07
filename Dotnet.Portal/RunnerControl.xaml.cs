@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -16,17 +18,21 @@ namespace Dotnet.Portal
     {
         private const int MaxLineCount = 200;
         private const int LinesToCut = 50;
+        private static readonly TimeSpan RefreshRate = TimeSpan.FromMilliseconds(100);
 
         private readonly IDictionary<int, Brush> _highlightColors;
 
         private readonly Runner _runner;
         private readonly ProjectSettings _settings;
 
+        private readonly List<OutputReceivedEventArgs> _buffer;
+
         public RunnerControl(ProjectSettings settings) : this()
         {
             _settings = settings;
             IDictionary<int, Regex> highlights = new Dictionary<int, Regex>();
             _highlightColors = new Dictionary<int, Brush>();
+            _buffer = new List<OutputReceivedEventArgs>();
 
             for (var i = 0; i < settings.HighlightSettings.Count; i++)
             {
@@ -180,6 +186,8 @@ namespace Dotnet.Portal
             checkBoxWatch.IsEnabled = false;
 
             _runner.Start(checkBoxWatch.IsChecked ?? false);
+
+            StartConsumingBuffer();
         }
 
         private void TextBoxWorkingDirectory_OnPreviewKeyDown(object sender, KeyEventArgs e)
@@ -190,6 +198,8 @@ namespace Dotnet.Portal
 
         private void VisualStopped()
         {
+            StopConsumingBuffer();
+
             if (!buttonStartStop.Dispatcher.CheckAccess())
             {
                 buttonStartStop.Dispatcher.Invoke(VisualStopped);
@@ -225,7 +235,63 @@ namespace Dotnet.Portal
 
         private void RunnerOnOutputReceived(object sender, OutputReceivedEventArgs args)
         {
-            AppendLine(args.Text, args.Highlights);
+            lock (_buffer)
+            {
+                if (_buffering == null)
+                {
+                    AppendLine(args.Text, args.Highlights);
+                    return;
+                }
+
+                _buffer.Add(args);
+            }
+        }
+
+        private Thread _buffering;
+
+        private void StartConsumingBuffer()
+        {
+            void LoopOnBuffer()
+            {
+                while (true)
+                {
+                    ConsumeBuffer();
+                    try
+                    {
+                        Thread.Sleep(RefreshRate);
+                    }
+                    catch (ThreadAbortException)
+                    {
+                        // ignore
+                    }
+                }
+            }
+
+            _buffering = new Thread(LoopOnBuffer) { IsBackground = true };
+            _buffering.Start();
+        }
+
+        private void StopConsumingBuffer()
+        {
+            lock (_buffer)
+            {
+                _buffering?.Abort();
+                _buffering = null;
+            }
+            ConsumeBuffer();
+        }
+
+        private void ConsumeBuffer()
+        {
+            lock (_buffer)
+            {
+                var lines = _buffer.Count > MaxLineCount ? _buffer.Skip(_buffer.Count - MaxLineCount) : _buffer;
+                foreach (var args in lines)
+                {
+                    AppendLine(args.Text, args.Highlights);
+                }
+                _buffer.Clear();
+            }
         }
 
         private void CheckBoxWatch_OnClick(object sender, RoutedEventArgs e)
