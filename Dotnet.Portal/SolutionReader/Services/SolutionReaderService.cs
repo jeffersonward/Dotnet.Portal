@@ -49,13 +49,45 @@ namespace Dotnet.Portal.SolutionReader.Services
             try
             {
                 var projectXml = XDocument.Load(file.OpenText());
-                var webProjectTargetFramework = projectXml.XPathSelectElement("/Project[@Sdk='Microsoft.NET.Sdk.Web']/PropertyGroup/TargetFramework");
-                return webProjectTargetFramework != null && webProjectTargetFramework.Value.ToLowerInvariant().StartsWith("netcoreapp");
+                var isWebProject = projectXml.XPathSelectElement("/Project[@Sdk='Microsoft.NET.Sdk.Web']") != null;
+                return isWebProject && IsNetcoreApp(file);
             }
             catch (Exception)
             {
-                return false;
             }
+            return false;
+        }
+
+        private static bool IsNetcoreApp(FileInfo file)
+        {
+            try
+            {
+                var projectXml = XDocument.Load(file.OpenText());
+                var webProjectTargetFramework = projectXml.XPathSelectElement("/Project/PropertyGroup/TargetFramework");
+                if (IsNetCoreTarget(webProjectTargetFramework)) return true;
+
+                var imports = projectXml.XPathSelectElements("/Project/Import");
+                foreach (var import in imports)
+                {
+                    var project = import.Attributes().SingleOrDefault(x => x.Name.LocalName == "Project")?.Value;
+                    if (!string.IsNullOrWhiteSpace(project))
+                    {
+                        var importedFile = Path.Combine(file.Directory.FullName, project);
+                        if (IsNetcoreApp(new FileInfo(importedFile))) return true;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return false;
+        }
+
+        private static bool IsNetCoreTarget(XElement projectTargetFramework)
+        {
+            if (projectTargetFramework == null) return false;
+            var targetFramework = projectTargetFramework.Value.ToLowerInvariant();
+            return targetFramework.StartsWith("netcoreapp") || targetFramework.StartsWith("net6");
         }
 
         private static Project ToProject(FileSystemInfo file)
