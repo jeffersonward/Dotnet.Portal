@@ -235,14 +235,14 @@ namespace Dotnet.Portal
 
         private void RunnerOnOutputReceived(object sender, OutputReceivedEventArgs args)
         {
+            if (_buffering == null)
+            {
+                AppendLine(args.Text, args.Highlights);
+                return;
+            }
+
             lock (_buffer)
             {
-                if (_buffering == null)
-                {
-                    AppendLine(args.Text, args.Highlights);
-                    return;
-                }
-
                 _buffer.Add(args);
             }
         }
@@ -253,7 +253,7 @@ namespace Dotnet.Portal
         {
             void LoopOnBuffer()
             {
-                while (true)
+                while (_buffering != null && (_runner.Running || _buffer.Count > 0))
                 {
                     ConsumeBuffer();
                     try
@@ -273,11 +273,9 @@ namespace Dotnet.Portal
 
         private void StopConsumingBuffer()
         {
-            lock (_buffer)
-            {
-                _buffering?.Abort();
-                _buffering = null;
-            }
+            _buffering?.Abort();
+            _buffering = null;
+
             ConsumeBuffer();
         }
 

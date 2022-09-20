@@ -65,6 +65,8 @@ namespace Dotnet.Portal
             _watcher.Path = Directory.Exists(watchPath) ? watchPath : workingDirectory;
         }
 
+        public bool Running => _running;
+
         public delegate void RunningStateChangedDelegate(object sender, RunningStateChangeEventArgs args);
 
         public event RunningStateChangedDelegate RunningStateChanged;
@@ -165,10 +167,10 @@ namespace Dotnet.Portal
                     CreateNoWindow = true,
                     UseShellExecute = false
                 };
-                Process.Start(startInfo);
+                var exitingProcess = Process.Start(startInfo);
+                exitingProcess.WaitForExit((int)TimeSpan.FromSeconds(10).TotalMilliseconds);
             }
 
-            _process?.WaitForExit();
             _process?.Dispose();
             _process = null;
             _running = false;
