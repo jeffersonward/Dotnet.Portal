@@ -48,6 +48,9 @@ namespace Dotnet.Portal.SolutionReader.Services
         {
             try
             {
+                if (!file.Exists) return false;
+                if (!file.Extension.Equals(".csproj", StringComparison.OrdinalIgnoreCase)) return false;
+
                 var projectXml = XDocument.Load(file.OpenText());
                 var isWebProject = projectXml.XPathSelectElement("/Project[@Sdk='Microsoft.NET.Sdk.Web']") != null;
                 return isWebProject && IsNetcoreApp(file);
@@ -87,7 +90,10 @@ namespace Dotnet.Portal.SolutionReader.Services
         {
             if (projectTargetFramework == null) return false;
             var targetFramework = projectTargetFramework.Value.ToLowerInvariant();
-            return targetFramework.StartsWith("netcoreapp") || targetFramework.StartsWith("net6");
+            return targetFramework.StartsWith("netcoreapp") ||
+                targetFramework.StartsWith("net6") ||
+                targetFramework.StartsWith("net7") ||
+                targetFramework.StartsWith("net8");
         }
 
         private static Project ToProject(FileSystemInfo file)
